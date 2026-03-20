@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Easter Egg Activity 1</title>
+  <style>
+    :root {
+      --line: #111111;
+      --dot: #111111;
+      --text: #111111;
+      --done: #16a34a;
+      --paper-bg: #fffdf8;
+      --grid-fine: rgba(220, 120, 40, 0.22);
+      --grid-bold: rgba(210, 100, 20, 0.5);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Comic Sans MS", "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+      background-color: var(--paper-bg);
+      background-image:
+        linear-gradient(to right, var(--grid-fine) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-fine) 1px, transparent 1px),
+        linear-gradient(to right, var(--grid-bold) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-bold) 1px, transparent 1px);
+      background-size: 5px 5px, 5px 5px, 40px 40px, 40px 40px;
+    }
+
+    .wrap {
+      width: min(96vw, 980px);
+      margin: 0 auto;
+      padding: 8px 18px 10px;
+      text-align: center;
+      position: relative;
+      background: transparent;
+    }
+
+    .logo {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: clamp(68px, 9vw, 110px);
+      height: auto;
+    }
+
+    .corner-image {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: clamp(90px, 12vw, 150px);
+      height: auto;
+      display: block;
+      background: transparent;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 4.2vw, 46px);
+      color: #111;
+      line-height: 1;
+    }
+
+    .subtitle {
+      margin: 2px 0 4px;
+      font-size: clamp(16px, 2.2vw, 22px);
+      color: #333;
+      padding: 0 120px;
+      line-height: 1.08;
+      font-weight: 700;
+    }
+
+    .faberge-link {
+      color: #8b1e3f;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+    }
+
+    .egg-stage {
+      margin: 0;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      overflow: visible;
+      touch-action: manipulation;
+      background: transparent;
+    }
+
+    .guide {
+      fill: none;
+      stroke: #111111;
+      stroke-width: 4;
+    }
+
+    .line {
+      stroke: var(--line);
+      stroke-width: 6;
+      stroke-linecap: round;
+    }
+
+    .hit {
+      fill: transparent;
+      cursor: pointer;
+    }
+
+    .label {
+      font-size: 28px;
+      fill: var(--text);
+      dominant-baseline: middle;
+      text-anchor: middle;
+      font-weight: 500;
+      user-select: none;
+    }
+
+    .instruction {
+      margin: -6px 0 2px;
+      font-size: clamp(18px, 2.4vw, 22px);
+      line-height: 1.1;
+    }
+
+    .controls {
+      margin-top: 4px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      padding: 10px 18px;
+      border: 1px solid #bbb;
+      background: #fff;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.18);
+      display: none;
+      z-index: 1000;
+    }
+
+    .overlay.show {
+      display: block;
+    }
+
+    .faberge-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(90vw, 420px);
+      padding: 14px 16px;
+      border: 1px solid rgba(0,0,0,0.16);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.98);
+      text-align: left;
+      display: none;
+      z-index: 1001;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    }
+
+    .faberge-box.show {
+      display: block;
+    }
+
+    .faberge-box p {
+      margin: 0 0 8px;
+      font-size: 14px;
+      line-height: 1.45;
+      color: #222;
+    }
+
+    .faberge-close {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 7px 12px;
+      border: 1px solid #bbb;
+      border-radius: 10px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    footer {
+      margin-top: 4px;
+      font-size: clamp(13px, 1.8vw, 18px);
+      color: #333;
+      line-height: 1.05;
+    }
+
+    @media (max-width: 700px) {
+      .corner-image {
+        width: 90px;
+      }
+
+      .logo {
+        width: 72px;
+      }
+
+      .subtitle {
+        padding: 0 78px;
+      }
+    }
+
+    @media print {
+      body {
+        margin: 0;
+      }
+
+      .wrap {
+        width: 100%;
+        max-width: none;
+        padding: 4mm 8mm 3mm;
+      }
+
+      .controls,
+      .overlay,
+      .faberge-box {
+        display: none !important;
+      }
+
+      @page {
+        size: A4 portrait;
+        margin: 8mm;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <img class="corner-image" src="image.png" alt="Decorative Fabergé egg" />
+    <img class="logo" src="logo.png" alt="Logo" />
+
+    <h1>Easter Egg Activity 1</h1>
+    <p class="subtitle">Prepare your own <span id="fabergeToggle" class="faberge-link">Fabergé Egg</span></p>
+
+    <div class="egg-stage">
+      <svg id="eggSvg" viewBox="0 0 700 760" aria-label="Interactive Easter Egg Activity 1">
+        <g transform="translate(52.5,-6) scale(0.85)">
+          <path class="guide" d="M350 135
+            C430 135, 505 185, 548 295
+            C585 392, 590 545, 545 645
+            C505 735, 435 790, 350 805
+            C265 790, 195 735, 155 645
+            C110 545, 115 392, 152 295
+            C195 185, 270 135, 350 135 Z" />
+
+          <g id="drawnLines"></g>
+          <g id="dotsLayer"></g>
+
+          <text id="doneText" x="350" y="90" text-anchor="middle" style="font-size:26px; fill:#16a34a; font-weight:700; display:none;">Well done!</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="instruction">Tap 1, then 2, then 3, and continue up to 18.</div>
+
+    <div class="controls">
+      <button id="resetBtn" type="button">Reset</button>
+      <button id="printBtn" type="button">Print / Save as PDF</button>
+    </div>
+
+    <footer>Panagiotis Domvros, English &amp; Drama Teacher, Principal of 1st Middle School of Pylea</footer>
+  </div>
+
+  <div id="overlay" class="overlay" aria-hidden="true"></div>
+
+  <div id="fabergeBox" class="faberge-box" aria-live="polite" role="dialog" aria-modal="true" aria-label="Fabergé Egg information">
+    <p><strong>English:</strong> A Fabergé egg is a very special decorative egg. The most famous ones were made in Russia, often from gold or silver, and decorated with jewels. They were created as beautiful gifts and many of them had a surprise inside.</p>
+    <p><strong>Ελληνικά:</strong> Ένα αυγό Fabergé είναι ένα πολύ ιδιαίτερο διακοσμητικό αυγό. Τα πιο γνωστά φτιάχτηκαν στη Ρωσία, συχνά από χρυσό ή ασήμι, και ήταν στολισμένα με πολύτιμες πέτρες. Δημιουργήθηκαν ως όμορφα δώρα και πολλά από αυτά είχαν μια έκπληξη στο εσωτερικό τους.</p>
+    <button id="fabergeClose" class="faberge-close" type="button">Close</button>
+  </div>
+
+  <script>
+    const points = [
+      { n: 17, x: 350, y: 135, lx: 350, ly: 106 },
+      { n: 6,  x: 425, y: 150, lx: 452, ly: 134 },
+      { n: 11, x: 485, y: 198, lx: 513, ly: 184 },
+      { n: 2,  x: 530, y: 262, lx: 558, ly: 250 },
+      { n: 9,  x: 560, y: 348, lx: 591, ly: 343 },
+      { n: 15, x: 570, y: 455, lx: 602, ly: 455 },
+      { n: 4,  x: 560, y: 568, lx: 591, ly: 573 },
+      { n: 18, x: 525, y: 675, lx: 554, ly: 690 },
+      { n: 13, x: 462, y: 755, lx: 486, ly: 785 },
+      { n: 7,  x: 350, y: 805, lx: 350, ly: 838 },
+      { n: 10, x: 238, y: 755, lx: 214, ly: 785 },
+      { n: 5,  x: 175, y: 675, lx: 146, ly: 690 },
+      { n: 16, x: 140, y: 568, lx: 109, ly: 573 },
+      { n: 12, x: 130, y: 455, lx: 98,  ly: 455 },
+      { n: 3,  x: 140, y: 348, lx: 109, ly: 343 },
+      { n: 8,  x: 170, y: 262, lx: 142, ly: 250 },
+      { n: 14, x: 215, y: 198, lx: 187, ly: 184 },
+      { n: 1,  x: 275, y: 150, lx: 248, ly: 134 }
+    ];
+
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const dotsLayer = document.getElementById('dotsLayer');
+    const drawnLines = document.getElementById('drawnLines');
+    const doneText = document.getElementById('doneText');
+    const resetBtn = document.getElementById('resetBtn');
+    const printBtn = document.getElementById('printBtn');
+    const fabergeToggle = document.getElementById('fabergeToggle');
+    const fabergeBox = document.getElementById('fabergeBox');
+    const fabergeClose = document.getElementById('fabergeClose');
+    const overlay = document.getElementById('overlay');
+
+    const sortedPoints = [...points].sort((a, b) => a.n - b.n);
+    let nextNumber = 1;
+
+    function el(tag, attrs = {}) {
+      const node = document.createElementNS(svgNS, tag);
+      Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, v));
+      return node;
+    }
+
+    function drawDots() {
+      dotsLayer.innerHTML = '';
+      points.forEach((p) => {
+        const completed = p.n < nextNumber;
+
+        const hit = el('circle', {
+          cx: p.x,
+          cy: p.y,
+          r: 28,
+          class: 'hit',
+          'data-number': p.n,
+          style: 'pointer-events:all; touch-action:manipulation; cursor:pointer;'
+        });
+
+        const dot = el('circle', {
+          cx: p.x,
+          cy: p.y,
+          r: 8,
+          fill: completed ? '#16a34a' : '#111111',
+          style: 'pointer-events:none;'
+        });
+
+        const label = el('text', {
+          x: p.lx,
+          y: p.ly,
+          class: 'label',
+          style: 'pointer-events:none;'
+        });
+
+        label.textContent = p.n;
+
+        hit.addEventListener('pointerdown', (event) => {
+          event.preventDefault();
+          handleTap(p.n);
+        });
+
+        dotsLayer.appendChild(hit);
+        dotsLayer.appendChild(dot);
+        dotsLayer.appendChild(label);
+      });
+    }
+
+    function addLine(from, to) {
+      const line = el('line', {
+        x1: from.x,
+        y1: from.y,
+        x2: to.x,
+        y2: to.y,
+        class: 'line'
+      });
+      drawnLines.appendChild(line);
+    }
+
+    function handleTap(number) {
+      if (number !== nextNumber) return;
+
+      if (nextNumber > 1) {
+        const from = sortedPoints[nextNumber - 2];
+        const to = sortedPoints[nextNumber - 1];
+        addLine(from, to);
+      }
+
+      nextNumber += 1;
+      drawDots();
+
+      if (nextNumber > 18) {
+        doneText.style.display = 'block';
+      }
+    }
+
+    function resetActivity() {
+      nextNumber = 1;
+      drawnLines.innerHTML = '';
+      doneText.style.display = 'none';
+      drawDots();
+    }
+
+    function openFabergeBox() {
+      fabergeBox.classList.add('show');
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeFabergeBox() {
+      fabergeBox.classList.remove('show');
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    fabergeToggle.addEventListener('click', openFabergeBox);
+    fabergeClose.addEventListener('click', closeFabergeBox);
+    overlay.addEventListener('click', closeFabergeBox);
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeFabergeBox();
+    });
+
+    resetBtn.addEventListener('click', resetActivity);
+    printBtn.addEventListener('click', () => window.print());
+
+    drawDots();
+  </script>
+</body>
+</html>
